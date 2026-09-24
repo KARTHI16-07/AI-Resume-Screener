@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: resume-screener-backend
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  profiles:
+    active: dev
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:defaultDevSecretKeyThatIsAtLeast256BitsLongForHS256Algorithm}
+    expiration-ms: 86400000
+  scoring:
+    service-url: ${SCORING_SERVICE_URL:http://localhost:8001}
+  upload:
+    dir: ${UPLOAD_DIR:./uploads}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+server:
+  port: ${PORT:8080}

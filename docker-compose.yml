@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: resume_screener
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Python Scoring Service
+  scoring-service:
+    build: ./scoring-service
+    ports:
+      - "8001:8001"
+    environment:
+      ALLOWED_ORIGINS: http://localhost:8080,http://localhost:5173
+      HOST: 0.0.0.0
+      PORT: 8001
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Spring Boot Backend
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATABASE_URL: jdbc:postgresql://db:5432/resume_screener
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: change-this-to-a-secure-256-bit-key-in-production
+      SCORING_SERVICE_URL: http://scoring-service:8001
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:80
+      UPLOAD_DIR: /app/uploads
+      PORT: 8080
+    depends_on:
+      db:
+        condition: service_healthy
+      scoring-service:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+
+  # React Frontend (nginx)
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  uploads:

@@ -20,14 +20,14 @@ const CandidateTable = ({ candidates, onDelete }) => {
   };
 
   const handleReply = async (email, name, candidateId) => {
-    const subject = prompt(Email Subject for \:, 'Update on your job application');
+    const subject = prompt(`Email Subject for ${name}:`, 'Update on your job application');
     if (!subject) return;
-    const message = prompt(Message to \:, 'Hello \,\n\nWe would like to schedule an interview with you.');
+    const message = prompt(`Message to ${name}:`, `Hello ${name},\n\nWe would like to schedule an interview with you.`);
     if (!message) return;
     
     try {
       await api.replyToCandidate(candidateId, { subject, message });
-      alert(Email sent successfully to \!);
+      alert(`Email sent successfully to ${email}!`);
     } catch (err) {
       alert('Failed to send email');
     }
@@ -54,7 +54,7 @@ const CandidateTable = ({ candidates, onDelete }) => {
           {candidates.map((candidate) => (
             <tr key={candidate.id}>
               <td>
-                <span className={\adge \\}>
+                <span className={`badge ${candidate.score >= 80 ? 'badge-success' : candidate.score >= 50 ? 'badge-warning' : 'badge-danger'}`}>
                   {candidate.score ? Math.round(candidate.score) + '%' : 'N/A'}
                 </span>
               </td>
@@ -72,7 +72,7 @@ const CandidateTable = ({ candidates, onDelete }) => {
               <td>{new Date(candidate.createdAt).toLocaleDateString()}</td>
               <td>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <Link to={\/candidates/\\} className="btn btn-primary text-sm" style={{ padding: '0.25rem 0.5rem' }}>
+                  <Link to={`/candidates/${candidate.id}`} className="btn btn-primary text-sm" style={{ padding: '0.25rem 0.5rem' }}>
                     View Details
                   </Link>
                   <button 

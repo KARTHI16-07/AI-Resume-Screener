@@ -77,13 +77,9 @@ export const downloadResume = (candidateId) => {
   });
 };
 
-export default api;
-
 export const replyToCandidate = (id, data) => api.post(`/api/candidates/${id}/reply`, data);
 export const replyToAll = (jobId, data) => api.post(`/api/candidates/job/${jobId}/reply-all`, data);
 export const applyForJob = (jobId, formData, onUploadProgress) => api.post(`/api/candidates/job/${jobId}/apply`, formData, { headers: { 'Content-Type': 'multipart/form-data' }, onUploadProgress });
 export const getMyApplications = () => api.get('/api/candidates/my-applications');
-export const replyToAll = (jobId, data) => api.post(/api/candidates/job/${jobId}/reply-all, data);
-export const applyForJob = (jobId, formData, onUploadProgress) => api.post(/api/candidates/job/${jobId}/apply, formData, { headers: { 'Content-Type': 'multipart/form-data' }, onUploadProgress });
-export const getMyApplications = () => api.get('/api/candidates/my-applications');
 
+export default api;

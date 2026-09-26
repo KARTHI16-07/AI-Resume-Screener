@@ -15,7 +15,7 @@ const HomePage = () => {
     const fetchData = async () => {
       try {
         const res = await api.getPublicJobs();
-        setJobs(res.data.data || res.data);
+        setJobs(res.data.data || res.data || []);
         
         if (user && user.role === 'CANDIDATE') {
           const appliedRes = await api.getMyApplications();
@@ -31,7 +31,7 @@ const HomePage = () => {
   }, [user]);
 
   const handleJobClick = (jobId) => {
-    navigate(/jobs/\);
+    navigate(`/jobs/${jobId}`);
   };
 
   return (
@@ -47,7 +47,7 @@ const HomePage = () => {
           className="btn btn-primary"
           style={{ padding: '15px 30px', fontSize: '1.1rem', borderRadius: '30px' }}
         >
-          View Open Jobs ?
+          View Open Jobs ↓
         </button>
       </div>
 
@@ -93,7 +93,7 @@ const HomePage = () => {
                 >
                   {hasApplied && (
                     <div style={{ position: 'absolute', top: '-12px', right: '-12px', backgroundColor: '#22c55e', color: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', fontSize: '14px' }}>
-                      ?
+                      ✓
                     </div>
                   )}
                   <h3 style={{ marginBottom: '15px', paddingRight: '20px', fontSize: '1.4rem' }}>{job.title}</h3>

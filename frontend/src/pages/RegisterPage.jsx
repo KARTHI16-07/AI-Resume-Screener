@@ -21,11 +21,15 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      await register(formData);
-      const from = location.state?.from?.pathname || (formData.role === 'RECRUITER' ? '/dashboard' : '/');
-      navigate(from, { replace: true });
+      const result = await register(formData);
+      if (result.success) {
+        const from = location.state?.from?.pathname || (result.role === 'RECRUITER' ? '/dashboard' : '/');
+        navigate(from, { replace: true });
+      } else {
+        setError(result.error);
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError('Registration failed due to unexpected error');
     } finally {
       setLoading(false);
     }
@@ -94,7 +98,7 @@ const RegisterPage = () => {
         </form>
 
         <div className="text-center mt-4 text-sm text-muted">
-          Already have an account? <Link to="/login" className="text-primary">Login</Link>
+          Already have an account? <Link to="/login" state={location.state} className="text-primary">Login</Link>
         </div>
       </div>
     </div>

@@ -18,6 +18,7 @@ public class User {
     private String password;
 
     private String fullName;
+    private String role;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -55,6 +56,9 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
     public String getFullName() {
         return fullName;

@@ -120,6 +120,41 @@ public class CandidateService {
         return "Candidate";
     }
 
+    
+    public CandidateResponse applyForJob(Long jobId, String name, String email, MultipartFile file) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            String newFileName = UUID.randomUUID().toString() + extension;
+            Path filePath = Paths.get(uploadDir, newFileName);
+            Files.copy(file.getInputStream(), filePath);
+            
+            String extractedText = resumeParserService.extractText(filePath.toFile());
+            
+            Candidate candidate = new Candidate(name, email, originalFilename, filePath.toAbsolutePath().toString(), file.getContentType(), extractedText, job.getId(), LocalDateTime.now());
+            candidate = candidateRepository.save(candidate);
+            
+            ScoreResult scoreResult = scoringClientService.scoreResume(candidate.getId(), job.getDescription(), job.getRequirements(), extractedText);
+            scoreResultRepository.save(scoreResult);
+            
+            return mapToResponse(candidate, scoreResult);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to apply for job: " + e.getMessage());
+        }
+    }
+    
+    public List<Long> getAppliedJobIdsByEmail(String email) {
+        return candidateRepository.findAll().stream()
+                .filter(c -> email.equalsIgnoreCase(c.getEmail()))
+                .map(Candidate::getJobId)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
     public List<CandidateResponse> getCandidatesByJob(Long jobId, String userEmail) {
         verifyJobOwnership(jobId, userEmail);
         List<Candidate> candidates = candidateRepository.findByJobId(jobId);

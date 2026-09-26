@@ -1,73 +1,95 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import ScoreBar from './ScoreBar';
-import SkillBadge from './SkillBadge';
+import { Link } from 'react-router-dom';
+import * as api from '../api/client';
 
 const CandidateTable = ({ candidates, onDelete }) => {
-  const navigate = useNavigate();
+  const handleDownload = async (candidateId, fileName) => {
+    try {
+      const response = await api.downloadResume(candidateId);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error('Download failed', err);
+      alert('Failed to download resume');
+    }
+  };
+
+  const handleReply = async (email, name, candidateId) => {
+    const subject = prompt(Email Subject for \:, 'Update on your job application');
+    if (!subject) return;
+    const message = prompt(Message to \:, 'Hello \,\n\nWe would like to schedule an interview with you.');
+    if (!message) return;
+    
+    try {
+      await api.replyToCandidate(candidateId, { subject, message });
+      alert(Email sent successfully to \!);
+    } catch (err) {
+      alert('Failed to send email');
+    }
+  };
 
   if (!candidates || candidates.length === 0) {
-    return (
-      <div className="card text-center p-8">
-        <p className="text-muted">No candidates found.</p>
-      </div>
-    );
+    return <div className="text-center p-8 text-muted">No candidates found matching the criteria.</div>;
   }
 
   return (
     <div className="table-container">
-      <table>
+      <table className="table">
         <thead>
           <tr>
-            <th>Candidate Name</th>
+            <th>Score</th>
+            <th>Name</th>
             <th>Email</th>
-            <th>Match Score</th>
-            <th>Top Matched Skills</th>
-            <th>Upload Date</th>
+            <th>Resume</th>
+            <th>Uploaded</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {candidates.map((candidate) => (
-            <tr key={candidate.id} onClick={() => navigate(`/candidates/${candidate.id}`)}>
-              <td style={{ fontWeight: 500 }}>{candidate.name || 'Unknown'}</td>
-              <td>{candidate.email || 'N/A'}</td>
-              <td style={{ width: '200px' }}>
-                <ScoreBar score={candidate.score} />
-              </td>
+            <tr key={candidate.id}>
               <td>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', maxWidth: '300px' }}>
-                  {candidate.matchedSkills && candidate.matchedSkills.length > 0 ? (
-                    candidate.matchedSkills.slice(0, 3).map((skill, idx) => (
-                      <SkillBadge key={idx} label={skill} type="matched" />
-                    ))
-                  ) : (
-                    <span className="text-muted text-sm">None identified</span>
-                  )}
-                  {candidate.matchedSkills && candidate.matchedSkills.length > 3 && (
-                    <span className="text-sm text-muted">+{candidate.matchedSkills.length - 3} more</span>
-                  )}
-                </div>
+                <span className={\adge \\}>
+                  {candidate.score ? Math.round(candidate.score) + '%' : 'N/A'}
+                </span>
+              </td>
+              <td>{candidate.name || 'Unknown'}</td>
+              <td>{candidate.email || 'Unknown'}</td>
+              <td>
+                <button 
+                  className="btn btn-secondary text-sm"
+                  onClick={() => handleDownload(candidate.id, candidate.resumeFileName)}
+                  style={{ padding: '0.25rem 0.5rem' }}
+                >
+                  Download
+                </button>
               </td>
               <td>{new Date(candidate.createdAt).toLocaleDateString()}</td>
-              <td onClick={(e) => e.stopPropagation()}>
-                <button 
-                  className="btn btn-secondary text-sm mr-2"
-                  onClick={() => navigate(`/candidates/${candidate.id}`)}
-                  style={{ marginRight: '0.5rem' }}
-                >
-                  View
-                </button>
-                <button 
-                  className="btn btn-danger text-sm"
-                  onClick={() => {
-                    if (window.confirm('Are you sure you want to delete this candidate?')) {
-                      onDelete(candidate.id);
-                    }
-                  }}
-                >
-                  Delete
-                </button>
+              <td>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <Link to={\/candidates/\\} className="btn btn-primary text-sm" style={{ padding: '0.25rem 0.5rem' }}>
+                    View Details
+                  </Link>
+                  <button 
+                    className="btn btn-secondary text-sm" 
+                    onClick={() => handleReply(candidate.email, candidate.name, candidate.id)}
+                    style={{ padding: '0.25rem 0.5rem', backgroundColor: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd' }}
+                  >
+                    Reply
+                  </button>
+                  <button 
+                    className="btn btn-secondary text-sm text-danger" 
+                    onClick={() => onDelete(candidate.id)}
+                    style={{ padding: '0.25rem 0.5rem' }}
+                  >
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

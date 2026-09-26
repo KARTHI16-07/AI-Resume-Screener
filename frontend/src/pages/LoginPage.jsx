@@ -13,7 +13,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/dashboard";
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ const LoginPage = () => {
     const result = await login(email, password);
     
     if (result.success) {
-      navigate(from, { replace: true });
+      const from = location.state?.from?.pathname || (result.role === "RECRUITER" ? "/dashboard" : "/"); navigate(from, { replace: true });
     } else {
       setError(result.error);
       setIsLoading(false);
@@ -85,4 +85,6 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
 

@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     if (storedToken && storedUser) {
       setToken(storedToken);
       try {
-        setUser(JSON.parse(storedUser));
+        const parsed = JSON.parse(storedUser); if(!parsed.role) parsed.role = "RECRUITER"; setUser(parsed);
       } catch (e) {
         console.error('Failed to parse stored user', e);
       }
@@ -30,13 +30,13 @@ export const AuthProvider = ({ children }) => {
       const authData = response.data; // { token, email, fullName }
       
       setToken(authData.token);
-      const userInfo = { email: authData.email, fullName: authData.fullName };
+      const userInfo = { email: authData.email, fullName: authData.fullName, role: authData.role || "RECRUITER" };
       setUser(userInfo);
       
       localStorage.setItem('token', authData.token);
       localStorage.setItem('user', JSON.stringify(userInfo));
       
-      return { success: true };
+      return { success: true, role: authData.role || "RECRUITER" };
     } catch (error) {
       return { 
         success: false, 
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       await api.register(userData);
-      return { success: true };
+      return { success: true, role: authData.role || "RECRUITER" };
     } catch (error) {
       return { 
         success: false, 
@@ -84,3 +84,7 @@ export const useAuth = () => {
   }
   return context;
 };
+
+
+
+

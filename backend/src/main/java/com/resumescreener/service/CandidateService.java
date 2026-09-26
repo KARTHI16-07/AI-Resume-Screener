@@ -78,8 +78,8 @@ public class CandidateService {
                 
                 String extractedText = resumeParserService.extractText(savedFile);
                 
-                String name = "Candidate " + originalFilename;
-                String email = "unknown@example.com";
+                String name = extractName(extractedText, originalFilename);
+                String email = extractEmail(extractedText);
                 
                 Candidate candidate = new Candidate(name, email, originalFilename, filePath.toAbsolutePath().toString(), file.getContentType(), extractedText, job.getId(), LocalDateTime.now());
                 candidate = candidateRepository.save(candidate);
@@ -93,6 +93,31 @@ public class CandidateService {
                 return null;
             }
         }).filter(java.util.Objects::nonNull).collect(Collectors.toList());
+    }
+
+    
+    private String extractEmail(String text) {
+        if (text == null) return "unknown@example.com";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
+        java.util.regex.Matcher m = p.matcher(text);
+        if (m.find()) return m.group();
+        return "unknown@example.com";
+    }
+
+    private String extractName(String text, String filename) {
+        if (text != null && !text.trim().isEmpty()) {
+            String[] lines = text.trim().split("\\r?\\n");
+            for (String line : lines) {
+                line = line.trim();
+                if (line.length() > 2 && line.length() < 50 && !line.toLowerCase().contains("resume") && !line.toLowerCase().contains("curriculum vitae")) {
+                    return line;
+                }
+            }
+        }
+        if (filename != null && filename.contains(".")) {
+            return filename.substring(0, filename.lastIndexOf("."));
+        }
+        return "Candidate";
     }
 
     public List<CandidateResponse> getCandidatesByJob(Long jobId, String userEmail) {
@@ -175,3 +200,4 @@ public class CandidateService {
         return response;
     }
 }
+

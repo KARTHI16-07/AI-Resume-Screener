@@ -28,7 +28,7 @@ const LoginPage = () => {
     const result = await login(email, password);
     
     if (result.success) {
-      const from = location.state?.from?.pathname || (result.role === "RECRUITER" ? "/dashboard" : "/"); navigate(from, { replace: true });
+      const from = result.role === "RECRUITER" ? "/dashboard" : (location.state?.from?.pathname || "/"); navigate(from, { replace: true });
     } else {
       setError(result.error);
       setIsLoading(false);
@@ -85,6 +85,7 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 
 
 

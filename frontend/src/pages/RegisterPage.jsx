@@ -23,7 +23,7 @@ const RegisterPage = () => {
     try {
       const result = await register(formData);
       if (result.success) {
-        const from = location.state?.from?.pathname || (result.role === 'RECRUITER' ? '/dashboard' : '/');
+        const from = result.role === "RECRUITER" ? "/dashboard" : (location.state?.from?.pathname || "/");
         navigate(from, { replace: true });
       } else {
         setError(result.error);
@@ -106,4 +106,5 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
+
 

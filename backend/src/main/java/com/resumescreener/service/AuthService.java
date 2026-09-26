@@ -31,14 +31,14 @@ public class AuthService {
             throw new RuntimeException("Email already in use");
         }
 
-        User user = new User(
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword()),
-                request.getFullName(),
-                LocalDateTime.now()
-        );
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setFullName(request.getFullName());
+        user.setCreatedAt(LocalDateTime.now());
+        user.setRole(request.getRole() != null ? request.getRole() : "RECRUITER");
 
-        userRepository.save(user);
+        user = userRepository.save(user);
 
         String token = jwtTokenProvider.generateToken(user.getEmail());
         return new AuthResponse(token, user.getEmail(), user.getFullName(), user.getRole());

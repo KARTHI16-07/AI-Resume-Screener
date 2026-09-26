@@ -37,6 +37,16 @@ public class JobController {
 
     @GetMapping
     @Operation(summary = "Get all jobs for current user")
+    
+    @GetMapping("/public")
+    @Operation(summary = "Get all jobs publicly")
+    public ResponseEntity<ApiResponse<List<JobResponse>>> getAllPublicJobs() {
+        List<JobResponse> jobs = jobService.getAllPublicJobs();
+        return ResponseEntity.ok(new ApiResponse<>(true, "Public jobs retrieved successfully", jobs));
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all jobs for current user")
     public ResponseEntity<ApiResponse<List<JobResponse>>> getAllJobs(Authentication authentication) {
         List<JobResponse> jobs = jobService.getAllJobsByUser(authentication.getName());
         return ResponseEntity.ok(new ApiResponse<>(true, "Jobs retrieved successfully", jobs));
@@ -70,3 +80,4 @@ public class JobController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Candidates retrieved successfully", candidates));
     }
 }
+

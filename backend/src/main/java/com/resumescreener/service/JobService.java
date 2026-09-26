@@ -37,6 +37,13 @@ public class JobService {
         return mapToResponse(job, 0);
     }
 
+    
+    public List<JobResponse> getAllPublicJobs() {
+        return jobRepository.findAll().stream()
+                .map(job -> new JobResponse(job.getId(), job.getTitle(), job.getDescription(), job.getRequirements(), job.getCreatedAt(), job.getUpdatedAt()))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public List<JobResponse> getAllJobsByUser(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -100,3 +107,4 @@ public class JobService {
         return response;
     }
 }
+

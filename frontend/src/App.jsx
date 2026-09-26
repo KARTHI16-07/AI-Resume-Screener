@@ -3,6 +3,7 @@ import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import HomePage from './pages/HomePage';
 import JobDetailPage from './pages/JobDetailPage';
 import CandidateDetailPage from './pages/CandidateDetailPage';
 import Layout from './components/Layout';
@@ -24,20 +25,27 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  return children;
+};
+
+const LayoutWrapper = ({ children }) => {
   return <Layout>{children}</Layout>;
 };
 
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<LayoutWrapper><HomePage /></LayoutWrapper>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       
       <Route 
-        path="/" 
+        path="/dashboard" 
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <LayoutWrapper>
+              <DashboardPage />
+            </LayoutWrapper>
           </ProtectedRoute>
         } 
       />
@@ -45,7 +53,9 @@ function App() {
         path="/jobs/:id" 
         element={
           <ProtectedRoute>
-            <JobDetailPage />
+            <LayoutWrapper>
+              <JobDetailPage />
+            </LayoutWrapper>
           </ProtectedRoute>
         } 
       />
@@ -53,7 +63,9 @@ function App() {
         path="/candidates/:id" 
         element={
           <ProtectedRoute>
-            <CandidateDetailPage />
+            <LayoutWrapper>
+              <CandidateDetailPage />
+            </LayoutWrapper>
           </ProtectedRoute>
         } 
       />

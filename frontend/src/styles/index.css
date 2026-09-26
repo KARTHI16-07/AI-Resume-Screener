@@ -583,3 +583,28 @@ tbody tr:last-child td {
   flex: 1;
   min-width: 200px;
 }
+
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+body.dark-mode .navbar {
+  background-color: #1e1e1e;
+  border-bottom-color: #333;
+}
+body.dark-mode .card {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+body.dark-mode .form-control {
+  background-color: #333;
+  color: #fff;
+  border-color: #555;
+}
+body.dark-mode .table th, body.dark-mode .table td {
+  border-color: #333;
+}
+body.dark-mode .text-muted {
+  color: #aaa;
+}
+

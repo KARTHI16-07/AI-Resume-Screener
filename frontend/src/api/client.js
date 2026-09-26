@@ -45,6 +45,7 @@ export const login = (credentials) => api.post('/api/auth/login', credentials);
 export const register = (userData) => api.post('/api/auth/register', userData);
 
 // Jobs
+export const getPublicJobs = () => api.get('/api/jobs/public');
 export const getJobs = () => api.get('/api/jobs');
 export const getJob = (id) => api.get(`/api/jobs/${id}`);
 export const createJob = (jobData) => api.post('/api/jobs', jobData);
@@ -77,3 +78,4 @@ export const downloadResume = (candidateId) => {
 };
 
 export default api;
+

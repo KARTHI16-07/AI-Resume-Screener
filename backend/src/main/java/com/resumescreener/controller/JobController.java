@@ -35,9 +35,6 @@ public class JobController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Job created successfully", job));
     }
 
-    @GetMapping
-    @Operation(summary = "Get all jobs for current user")
-    
     @GetMapping("/public")
     @Operation(summary = "Get all jobs publicly")
     public ResponseEntity<ApiResponse<List<JobResponse>>> getAllPublicJobs() {
@@ -80,4 +77,3 @@ public class JobController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Candidates retrieved successfully", candidates));
     }
 }
-

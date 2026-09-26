@@ -9,8 +9,18 @@ public class JobResponse {
     private String requirements;
     private int candidateCount;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public JobResponse() {}
+
+    public JobResponse(Long id, String title, String description, String requirements, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.requirements = requirements;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -24,4 +34,6 @@ public class JobResponse {
     public void setCandidateCount(int candidateCount) { this.candidateCount = candidateCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
